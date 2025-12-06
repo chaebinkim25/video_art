@@ -167,8 +167,7 @@ def create_generative_art_video(
         fps=fps,
         codec='libx264',
         audio=False,
-        preset='medium',
-        logger='bar'
+        preset='medium'
     )
     
     print(f"✓ Video saved to {output_filename}")
