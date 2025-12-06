@@ -4,7 +4,35 @@ Generates patterns based on parametric equations.
 """
 
 import numpy as np
+import math
 from typing import Tuple
+
+
+def _draw_curve(x: np.ndarray, y: np.ndarray, width: int, height: int, 
+                thickness: float) -> np.ndarray:
+    """
+    Helper function to draw a curve on an image with thickness.
+    
+    Args:
+        x: Array of x coordinates
+        y: Array of y coordinates
+        width: Image width
+        height: Image height
+        thickness: Line thickness
+        
+    Returns:
+        2D numpy array with the drawn curve
+    """
+    pattern = np.zeros((height, width))
+    
+    for i in range(len(x)):
+        xi, yi = x[i], y[i]
+        if 0 <= xi < width and 0 <= yi < height:
+            y_range = slice(max(0, yi - int(thickness)), min(height, yi + int(thickness) + 1))
+            x_range = slice(max(0, xi - int(thickness)), min(width, xi + int(thickness) + 1))
+            pattern[y_range, x_range] = 1
+    
+    return pattern
 
 
 def lissajous(width: int = 800, height: int = 600,
@@ -35,19 +63,8 @@ def lissajous(width: int = 800, height: int = 600,
     x = ((x + 1) / 2 * (width - 40) + 20).astype(int)
     y = ((y + 1) / 2 * (height - 40) + 20).astype(int)
     
-    # Create image
-    pattern = np.zeros((height, width))
-    
-    # Draw curve with thickness
-    for i in range(len(x)):
-        xi, yi = x[i], y[i]
-        if 0 <= xi < width and 0 <= yi < height:
-            # Add thickness around each point
-            y_range = slice(max(0, yi - int(thickness)), min(height, yi + int(thickness) + 1))
-            x_range = slice(max(0, xi - int(thickness)), min(width, xi + int(thickness) + 1))
-            pattern[y_range, x_range] = 1
-    
-    return pattern
+    # Create image and draw curve
+    return _draw_curve(x, y, width, height, thickness)
 
 
 def rose_curve(width: int = 800, height: int = 600,
@@ -81,18 +98,8 @@ def rose_curve(width: int = 800, height: int = 600,
     x = (x * scale + width / 2).astype(int)
     y = (y * scale + height / 2).astype(int)
     
-    # Create image
-    pattern = np.zeros((height, width))
-    
-    # Draw curve with thickness
-    for i in range(len(x)):
-        xi, yi = x[i], y[i]
-        if 0 <= xi < width and 0 <= yi < height:
-            y_range = slice(max(0, yi - int(thickness)), min(height, yi + int(thickness) + 1))
-            x_range = slice(max(0, xi - int(thickness)), min(width, xi + int(thickness) + 1))
-            pattern[y_range, x_range] = 1
-    
-    return pattern
+    # Create image and draw curve
+    return _draw_curve(x, y, width, height, thickness)
 
 
 def hypotrochoid(width: int = 800, height: int = 600,
@@ -114,7 +121,7 @@ def hypotrochoid(width: int = 800, height: int = 600,
     Returns:
         2D numpy array representing the pattern
     """
-    t = np.linspace(0, 2 * np.pi * r / np.gcd(int(R), int(r)), num_points)
+    t = np.linspace(0, 2 * np.pi * r / math.gcd(int(R), int(r)), num_points)
     
     x = (R - r) * np.cos(t) + d * np.cos((R - r) / r * t)
     y = (R - r) * np.sin(t) - d * np.sin((R - r) / r * t)
@@ -125,18 +132,8 @@ def hypotrochoid(width: int = 800, height: int = 600,
     x = (x * scale + width / 2).astype(int)
     y = (y * scale + height / 2).astype(int)
     
-    # Create image
-    pattern = np.zeros((height, width))
-    
-    # Draw curve with thickness
-    for i in range(len(x)):
-        xi, yi = x[i], y[i]
-        if 0 <= xi < width and 0 <= yi < height:
-            y_range = slice(max(0, yi - int(thickness)), min(height, yi + int(thickness) + 1))
-            x_range = slice(max(0, xi - int(thickness)), min(width, xi + int(thickness) + 1))
-            pattern[y_range, x_range] = 1
-    
-    return pattern
+    # Create image and draw curve
+    return _draw_curve(x, y, width, height, thickness)
 
 
 def butterfly_curve(width: int = 800, height: int = 600,
@@ -168,15 +165,5 @@ def butterfly_curve(width: int = 800, height: int = 600,
     x = (x * scale + width / 2).astype(int)
     y = (y * scale + height / 2).astype(int)
     
-    # Create image
-    pattern = np.zeros((height, width))
-    
-    # Draw curve with thickness
-    for i in range(len(x)):
-        xi, yi = x[i], y[i]
-        if 0 <= xi < width and 0 <= yi < height:
-            y_range = slice(max(0, yi - int(thickness)), min(height, yi + int(thickness) + 1))
-            x_range = slice(max(0, xi - int(thickness)), min(width, xi + int(thickness) + 1))
-            pattern[y_range, x_range] = 1
-    
-    return pattern
+    # Create image and draw curve
+    return _draw_curve(x, y, width, height, thickness)
