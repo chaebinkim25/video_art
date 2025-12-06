@@ -68,14 +68,13 @@ def voronoi_cells(width: int = 800, height: int = 600,
     np.random.seed(seed)
     points = np.random.rand(num_points, 2) * [width, height]
     
-    y, x = np.ogrid[:height, :width]
-    coords = np.stack([x, y], axis=-1)
+    # Create coordinate grids
+    y, x = np.meshgrid(np.arange(height), np.arange(width), indexing='ij')
     
     # Calculate distances to all points
     distances = np.zeros((height, width, num_points))
     for i, point in enumerate(points):
-        distances[:, :, i] = np.sqrt((coords[:, :, 0] - point[0])**2 + 
-                                     (coords[:, :, 1] - point[1])**2)
+        distances[:, :, i] = np.sqrt((x - point[0])**2 + (y - point[1])**2)
     
     # Assign each pixel to nearest point
     cells = np.argmin(distances, axis=2)
