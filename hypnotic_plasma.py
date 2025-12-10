@@ -4,8 +4,8 @@ from moviepy import VideoClip
 
 # --- 4K Configuration ---
 WIDTH, HEIGHT = 3840, 2160
-DURATION = 5
-FPS = 24
+DURATION = 222
+FPS = 60
 
 # Pre-calculate coordinate grids on the GPU once to save time
 # We use 'cp' (CuPy) to allocate this memory on the Graphics Card
@@ -31,6 +31,10 @@ def make_frame_gpu(t):
     green = cp.cos(z1 + z3 - t)
     blue = cp.sin(z2 + z3 + t * 0.5)
 
+    red = cp.clip(((red + 1) / 2), 0, 1) ** 0.8
+    green = cp.clip(((green + 1) / 2), 0, 1) ** 0.8
+    blue = cp.clip(((blue + 1) / 2), 0, 1) ** 0.8
+
     # 3. Stack and Convert
     # We stack the channels on the GPU first
     img_gpu = cp.dstack((
@@ -39,6 +43,8 @@ def make_frame_gpu(t):
         ((blue + 1) / 2 * 255).astype('uint8')
     ))
 
+    print(img_gpu.device)
+
     # 4. TRANSFER TO CPU (Critical Step)
     # MoviePy/FFmpeg runs on CPU, so we must pull the calculated frame back.
     return img_gpu.get() 
@@ -46,5 +52,5 @@ def make_frame_gpu(t):
 # --- Render ---
 print(f"Rendering 4K GPU Art ({WIDTH}x{HEIGHT})...")
 clip = VideoClip(make_frame_gpu).with_duration(DURATION)
-clip.write_videofile("gpu_art_4k.mp4", fps=FPS)
+clip.write_videofile("gpu_art_4k.mp4", fps=FPS, codec="libx264rgb", bitrate="50M", ffmpeg_params=["-threads", "16"])
 print("Done!")
